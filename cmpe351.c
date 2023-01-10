@@ -1026,3 +1026,105 @@ void ps_p()
 	}
 }
 
+
+void rr()
+{
+	struct node *clone_header = clone_LL(header_original);
+	struct node *temp1, *temp2, *temp3;
+	int program_counter = 0;
+	float average_wait = 0.0f;
+	int number_of_process = process_counter(clone_header);
+	bool is_first = true;
+	bool previous_ones_done = false;
+	bubble_sort(&clone_header, number_of_process, "AT");
+	temp1 = temp2 = temp3 = clone_header;
+
+	while (temp3 != NULL)
+	{
+		temp3->time_slices = temp3->burst_time / time_quantum;
+		temp3->last_slice_burst = temp3->burst_time % time_quantum;
+		temp3 = temp3->next;
+	}
+
+	while (!is_all_done(clone_header))
+	{
+		temp1 = clone_header;
+		is_first = true;
+		while (temp1 != NULL)
+		{
+			if (!temp1->is_terminated)
+			{
+				if (temp1->arrival_time <= program_counter)
+				{
+					if (is_first)
+					{
+						if (temp1->time_slices == 0)
+						{
+							program_counter += temp1->last_slice_burst;
+							if (temp1->last_slice_burst != 0)
+								temp1->turnaround_time = program_counter;
+							temp1->waiting_time = temp1->turnaround_time - temp1->burst_time;
+							if (temp1->waiting_time < 0)
+								temp1->waiting_time = 0;
+							temp1->is_terminated = true;
+						}
+						else
+						{
+							program_counter += time_quantum;
+							temp1->turnaround_time = program_counter;
+							temp1->time_slices--;
+						}
+						is_first = false;
+					}
+
+					else
+					{
+						if (temp1->time_slices == 0)
+						{
+							program_counter += temp1->last_slice_burst;
+							if (temp1->last_slice_burst != 0)
+								temp1->turnaround_time = program_counter;
+							temp1->waiting_time = temp1->turnaround_time - temp1->burst_time - temp1->arrival_time;
+							if (temp1->waiting_time < 0)
+								temp1->waiting_time = 0;
+							temp1->is_terminated = true;
+						}
+						else
+						{
+							program_counter += time_quantum;
+							temp1->turnaround_time = program_counter;
+							temp1->time_slices--;
+						}
+					}
+				}
+
+				else
+				{
+					previous_ones_done = is_previous_ones_done(clone_header, program_counter);
+					if (previous_ones_done)
+					{
+						program_counter = temp1->arrival_time;
+						if (temp1->time_slices == 0)
+						{
+							program_counter += temp1->last_slice_burst;
+							if (temp1->last_slice_burst != 0)
+								temp1->turnaround_time = program_counter;
+							temp1->waiting_time = temp1->turnaround_time - temp1->burst_time - temp1->arrival_time;
+							if (temp1->waiting_time < 0)
+								temp1->waiting_time = 0;
+							temp1->is_terminated = true;
+						}
+						else
+						{
+							program_counter += time_quantum;
+							temp1->turnaround_time = program_counter;
+							temp1->time_slices--;
+						}
+					}
+				}
+			}
+
+			is_first = false;
+			temp1 = temp1->next;
+		}
+	}
