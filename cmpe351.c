@@ -115,15 +115,13 @@ int main(int argc, char *argv[])
 		printf("Please check the input file argument and run the program again\n");
 		exit(1);
 	}
+	
 	fclose(finput);
 
-	write_input_to_LL(input_filename);
+	 void write_input_to_LL(input_filename);
 
-	menu();
-
-	return 0;
-}
-
+	 void menu();
+	
 
 struct node *create_node(int pid, int burst_time, int arrival_time, int priority)
 {
