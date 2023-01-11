@@ -1,3 +1,7 @@
+//JOSUE GLOIRE LUBUNGO
+//21911099
+//I failed to modify my username, i feared to lose my codes
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
